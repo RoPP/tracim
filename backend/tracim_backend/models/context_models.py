@@ -51,6 +51,18 @@ class ConfigModel(object):
         self.email_notification_activated = email_notification_activated
 
 
+class WebdavInfo(object):
+    def __init__(
+            self,
+            activated: bool,
+            client_base_url: str,
+            encrypted: bool,
+    ) -> None:
+        self.activated = activated
+        self.client_base_url = client_base_url
+        self.encrypted = encrypted
+
+
 class PreviewAllowedDim(object):
 
     def __init__(

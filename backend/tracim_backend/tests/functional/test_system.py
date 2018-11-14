@@ -59,7 +59,6 @@ class TestApplicationEndpoint(FunctionalTest):
         res = self.testapp.get('/api/v2/system/applications', status=401)
         assert isinstance(res.json, dict)
         assert 'code' in res.json.keys()
-        assert res.json_body['code'] is None
         assert 'message' in res.json.keys()
         assert 'details' in res.json.keys()
 
@@ -198,6 +197,47 @@ class TestAboutEndpoint(FunctionalTest):
         assert 'code' in res.json.keys()
         assert 'message' in res.json.keys()
         assert 'details' in res.json.keys()
+
+class TestWebdavInfoEndpoint(FunctionalTest):
+    """
+    Tests for /api/v2/system/webdav
+    """
+    config_section = 'webdav_functional_test'
+
+    def test_api__get_webdav_info__ok_200__nominal_case(self):
+        """
+        Get webdav info with a registered user.
+        """
+        self.testapp.authorization = (
+            'Basic',
+            (
+                'admin@admin.admin',
+                'admin@admin.admin'
+            )
+        )
+        res = self.testapp.get('/api/v2/system/webdav', status=200)
+        webdav = res.json_body
+        assert webdav['activated'] is True
+        assert webdav['client_base_url'] == 'localhost:3030/'
+        assert webdav['encrypted'] is False
+
+    def test_api__get_content_types__err_401__unregistered_user(self):
+        """
+        Get webdav info with an unregistered user (bad auth)
+        """
+        self.testapp.authorization = (
+            'Basic',
+            (
+                'john@doe.doe',
+                'lapin'
+            )
+        )
+        res = self.testapp.get('/api/v2/system/webdav', status=401)
+        assert isinstance(res.json, dict)
+        assert 'code' in res.json.keys()
+        assert 'message' in res.json.keys()
+        assert 'details' in res.json.keys()
+
 
 
 class TestConfigEndpoint(FunctionalTest):

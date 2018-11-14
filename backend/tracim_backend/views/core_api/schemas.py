@@ -7,6 +7,9 @@ from marshmallow.validate import Length
 from marshmallow.validate import OneOf
 from marshmallow.validate import Range
 
+from tracim_backend.lib.utils.utils import DATETIME_FORMAT
+from tracim_backend.models.auth import Profile
+
 from tracim_backend.app_models.contents import GlobalStatus
 from tracim_backend.app_models.contents import content_status_list
 from tracim_backend.app_models.contents import content_type_list
@@ -27,64 +30,26 @@ from tracim_backend.models.context_models import FilePreviewSizedPath
 from tracim_backend.models.context_models import FileQuery
 from tracim_backend.models.context_models import FileRevisionPath
 from tracim_backend.models.context_models import FolderContentUpdate
-from tracim_backend.models.context_models import KnownMemberQuery
-from tracim_backend.models.context_models import LoginCredentials
-from tracim_backend.models.context_models import MoveParams
-from tracim_backend.models.context_models import PageQuery
-from tracim_backend.models.context_models import ResetPasswordCheckToken
-from tracim_backend.models.context_models import ResetPasswordModify
-from tracim_backend.models.context_models import ResetPasswordRequest
-from tracim_backend.models.context_models import RevisionPreviewSizedPath
-from tracim_backend.models.context_models import RoleUpdate
-from tracim_backend.models.context_models import SetContentStatus
+from tracim_backend.models.context_models import AutocompleteQuery
+from tracim_backend.models.context_models import ContentIdsQuery
+from tracim_backend.models.context_models import UserWorkspaceAndContentPath
+from tracim_backend.models.context_models import ContentCreation
+from tracim_backend.models.context_models import UserCreation
 from tracim_backend.models.context_models import SetEmail
 from tracim_backend.models.context_models import SetPassword
-from tracim_backend.models.context_models import SimpleFile
-from tracim_backend.models.context_models import TextBasedContentUpdate
-from tracim_backend.models.context_models import UserCreation
 from tracim_backend.models.context_models import UserInfos
 from tracim_backend.models.context_models import UserProfile
-from tracim_backend.models.context_models import UserWorkspaceAndContentPath
-from tracim_backend.models.context_models import WorkspaceAndContentPath
-from tracim_backend.models.context_models import \
-    WorkspaceAndContentRevisionPath
-from tracim_backend.models.context_models import WorkspaceAndUserPath
+from tracim_backend.models.context_models import ContentPreviewSizedPath
+from tracim_backend.models.context_models import RevisionPreviewSizedPath
+from tracim_backend.models.context_models import PageQuery
+from tracim_backend.models.context_models import WorkspaceAndContentRevisionPath
 from tracim_backend.models.context_models import WorkspaceMemberInvitation
 from tracim_backend.models.context_models import WorkspacePath
 from tracim_backend.models.context_models import WorkspaceUpdate
 from tracim_backend.models.data import ActionDescription
 from tracim_backend.models.data import UserRoleInWorkspace
-
-FIELD_LANG_DESC = "User langage in ISO 639 format. " \
-                  "See https://fr.wikipedia.org/wiki/ISO_639"
-FIELD_PROFILE_DESC = "Profile of the user. The profile is Tracim wide."
-FIELD_TIMEZONE_DESC = "Timezone as in tz database format"
-
-
-class SimpleFileSchema(marshmallow.Schema):
-    """
-    Just a simple schema for file
-    """
-    # TODO - G.M - 2018-10-09 - Set required to True, actually disable because
-    # activating it make it failed due to "is not iterable issue.
-    files = marshmallow.fields.Raw(required=False, description='a file')
-
-    @post_load
-    def create_file(self, data: typing.Dict[str, typing.Any]) -> object:
-        return SimpleFile(**data)
-
-
-class FileCreationFormSchema(marshmallow.Schema):
-    parent_id = marshmallow.fields.Int(
-        example=2,
-        default=0,
-        validate=Range(min=0, error="Value must be positive or 0"),
-        allow_none=True
-    )
-
-    @post_load
-    def file_creation_object(self, data: typing.Dict[str, typing.Any]) -> object:  # nopep8
-        return FileCreation(**data)
+from tracim_backend.models.data import ActionDescription
+from tracim_backend.app_models.validator import all_content_types_validator
 
 
 class UserDigestSchema(marshmallow.Schema):
