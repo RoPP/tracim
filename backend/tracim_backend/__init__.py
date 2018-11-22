@@ -15,6 +15,8 @@ from tracim_backend.extensions import hapic
 from tracim_backend.config import CFG
 from tracim_backend.lib.utils.request import TracimRequest
 from tracim_backend.lib.utils.authentification import CookieSessionAuthentificationPolicy
+from tracim_backend.lib.utils.authentification import RemoteAuthentificationPolicy
+from tracim_backend.lib.utils.authentification import REMOTE_USER_EMAIL_LOGIN_HEADER
 from tracim_backend.lib.utils.authentification import TracimBasicAuthAuthenticationPolicy
 from tracim_backend.lib.utils.authentification import ApiTokenAuthentificationPolicy
 from tracim_backend.lib.utils.authentification import TRACIM_API_KEY_HEADER
@@ -69,6 +71,9 @@ def web(global_config, **local_settings):
     configurator.include("pyramid_beaker")
     configurator.include("pyramid_multiauth")
     policies = [
+        RemoteAuthentificationPolicy(
+            remote_user_email_login_header=REMOTE_USER_EMAIL_LOGIN_HEADER,
+        ),
         CookieSessionAuthentificationPolicy(
             reissue_time=app_config.SESSION_REISSUE_TIME),  # nopep8
         ApiTokenAuthentificationPolicy(

@@ -16,6 +16,7 @@ from tracim_backend.models import User
 BASIC_AUTH_WEBUI_REALM = "tracim"
 TRACIM_API_KEY_HEADER = "Tracim-Api-Key"
 TRACIM_API_USER_EMAIL_LOGIN_HEADER = "Tracim-Api-Login"
+REMOTE_USER_EMAIL_LOGIN_HEADER = "X-Remote-User"
 
 
 def _get_auth_unsafe_user(
@@ -140,6 +141,31 @@ class ApiTokenAuthentificationPolicy(CallbackAuthenticationPolicy):
 
     def unauthenticated_userid(self, request):
         return request.headers.get(self.api_user_email_login_header)
+
+    def remember(self, request, userid, **kw):
+        return []
+
+    def forget(self, request):
+        return []
+
+
+@implementer(IAuthenticationPolicy)
+class RemoteAuthentificationPolicy(CallbackAuthenticationPolicy):
+
+    def __init__(self, remote_user_email_login_header: str):
+        self.remote_user_email_login_header = remote_user_email_login_header
+        self.callback = None
+
+    def authenticated_userid(self, request):
+        app_config = request.registry.settings['CFG']  # type:'CFG'
+        # check if user is correct
+        user = _get_auth_unsafe_user(request, email=request.unauthenticated_userid)
+        if not user or not user.is_active or user.is_deleted:
+            return None
+        return user.user_id
+
+    def unauthenticated_userid(self, request):
+        return request.headers.get(self.remote_user_email_login_header)
 
     def remember(self, request, userid, **kw):
         return []
