@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pyramid_multiauth import MultiAuthenticationPolicy
 from tracim_backend.views.core_api.account_controller import AccountController
+from tracim_backend.views.radicale_proxy.proxy import RadicaleProxyController
 
 try:  # Python 3.5+
     from http import HTTPStatus
@@ -139,6 +140,7 @@ def web(global_config, **local_settings):
     thread_controller = ThreadController()
     file_controller = FileController()
     folder_controller = FolderController()
+    radicale_proxy_controller = RadicaleProxyController()
     configurator.include(session_controller.bind, route_prefix=BASE_API_V2)
     configurator.include(system_controller.bind, route_prefix=BASE_API_V2)
     configurator.include(user_controller.bind, route_prefix=BASE_API_V2)
@@ -150,6 +152,7 @@ def web(global_config, **local_settings):
     configurator.include(thread_controller.bind, route_prefix=BASE_API_V2)
     configurator.include(file_controller.bind, route_prefix=BASE_API_V2)
     configurator.include(folder_controller.bind, route_prefix=BASE_API_V2)
+    configurator.include(radicale_proxy_controller.bind)
     if app_config.FRONTEND_SERVE:
         configurator.include('pyramid_mako')
         frontend_controller = FrontendController(app_config.FRONTEND_DIST_FOLDER_PATH)  # nopep8
