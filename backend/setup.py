@@ -56,6 +56,8 @@ requires = [
     'pyramid_mako',
     # i18n
     'Babel',
+    # others
+    'deprecation'
 ]
 
 tests_require = [
@@ -85,7 +87,7 @@ if sys.version_info < (3, 5):
 
 setup(
     name='tracim_backend',
-    version='1.9.1',
+    version='2.1',
     description='Rest API (Back-end) of Tracim v2',
     long_description=README + '\n\n' + CHANGES,
     classifiers=[

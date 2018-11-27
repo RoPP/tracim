@@ -10,6 +10,7 @@ import sqlalchemy
 import transaction
 from depot.io.utils import FileIntent
 from depot.manager import DepotManager
+from deprecation import deprecated
 from preview_generator.exception import UnavailablePreviewType
 from preview_generator.exception import UnsupportedMimeType
 from preview_generator.manager import PreviewManager
@@ -1410,6 +1411,11 @@ class ContentApi(object):
         content.properties = properties
         return content
 
+
+    # # TODO - G.M - 2018-11-27 - convert  set_allowed_content and
+    # _set_allowed_content to one private method and adapt related tests
+
+    @deprecated(deprecated_in="2.1", details='Use update_container_content instead')
     def set_allowed_content(self, content: Content, allowed_content_type_slug_list: typing.List[str]) -> Content:  # nopep8
         """
         :param content: the given content instance
