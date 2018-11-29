@@ -78,6 +78,10 @@ class NotAuthenticated(TracimException):
     pass
 
 
+class NotAuthorized(TracimException):
+    pass
+
+
 class WorkspaceNotFound(NotFound):
     error_code = error.WORKSPACE_NOT_FOUND
 

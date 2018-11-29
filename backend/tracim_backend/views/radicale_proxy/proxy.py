@@ -1,6 +1,10 @@
 # coding: utf-8
 from pyramid.config import Configurator
+from tracim_backend.extensions import hapic
+from tracim_backend.exceptions import NotAuthorized
+from tracim_backend.exceptions import NotAuthenticated
 from tracim_backend.lib.proxy.proxy import Proxy
+from tracim_backend.lib.utils.authorization import check_user_calendar_authorization
 from tracim_backend.lib.utils.request import TracimRequest
 from tracim_backend.views.controllers import Controller
 
@@ -9,12 +13,16 @@ class RadicaleProxyController(Controller):
     def __init__(self):
         self._proxy = Proxy(
             # FIXME BS 2018-11-27: from config
-            base_address='http://127.0.0.1/',
+            base_address='http://127.0.0.1:4321',
         )
 
+    # FIXME BS 2018-11-29: enable doc
+    # @hapic.with_api_doc()
+    @hapic.handle_exception(NotAuthenticated, http_code=401)
+    @hapic.handle_exception(NotAuthorized, http_code=403)
     def radicale_proxy__user(self, context, request: TracimRequest):
-        # FIXME BS 2018-11-26: check authenticated user can make this request
         user_id = int(request.matchdict['user_id'])
+        check_user_calendar_authorization(request, user_id)
 
         return self._proxy.get_response_for_request(
             request,
@@ -23,6 +31,10 @@ class RadicaleProxyController(Controller):
             )
         )
 
+    # FIXME BS 2018-11-29: enable doc
+    # @hapic.with_api_doc()
+    @hapic.handle_exception(NotAuthenticated, http_code=401)
+    @hapic.handle_exception(NotAuthorized, http_code=403)
     def radicale_proxy__workspace(self, context, request: TracimRequest):
         # FIXME BS 2018-11-26: check authenticated user can make this request
         return self._proxy.get_response_for_request(request)

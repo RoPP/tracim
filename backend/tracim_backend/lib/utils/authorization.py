@@ -8,7 +8,7 @@ from zope.interface import implementer
 
 from tracim_backend.app_models.contents import ContentType
 from tracim_backend.app_models.contents import content_type_list
-from tracim_backend.exceptions import ContentTypeNotAllowed
+from tracim_backend.exceptions import ContentTypeNotAllowed, NotAuthorized
 from tracim_backend.exceptions import InsufficientUserProfile
 from tracim_backend.exceptions import InsufficientUserRoleInWorkspace
 from tracim_backend.models import Group
@@ -217,3 +217,19 @@ def require_comment_ownership_or_role(
             raise InsufficientUserRoleInWorkspace()
         return wrapper
     return decorator
+
+
+def check_user_calendar_authorization(
+    request: 'TracimRequest',
+    user_id: int,
+) -> None:
+    """
+    Raise NotAuthenticated if user not authenticated and raise
+    NotAuthorized if given calendar user id not allowed
+    """
+    # Note: raise NotAuthenticated if user not authenticated
+    if request.current_user.user_id != user_id:
+        raise NotAuthorized(
+            'Current user is not allowed to access "{}.ics"'
+            ' user calendar'.format(str(user_id)),
+        )
