@@ -1,5 +1,6 @@
 # coding: utf-8
 from pyramid.config import Configurator
+from pyramid.response import Response
 from tracim_backend.extensions import hapic
 from tracim_backend.exceptions import NotAuthorized
 from tracim_backend.exceptions import NotAuthenticated
@@ -22,13 +23,28 @@ class RadicaleProxyController(Controller):
     @hapic.handle_exception(NotAuthorized, http_code=403)
     def radicale_proxy__user(self, context, request: TracimRequest):
         user_id = int(request.matchdict['user_id'])
-        check_user_calendar_authorization(request, user_id)
+
+        try:
+            check_user_calendar_authorization(request, user_id)
+        # TODO BS 2018-12-04: managed in decorators ?
+        except NotAuthenticated:
+            return Response(
+                status=401,
+                headerlist=[
+                    ('WWW-Authenticate', 'Basic realm="Tracim credentials"'),
+                ]
+            )
 
         return self._proxy.get_response_for_request(
             request,
             '/user/{}.ics'.format(
                 str(user_id),
-            )
+            ),
+            extra_headers={
+                # NOTE BS 2018-12-04: Radicale must be configured with "http_x_remote_user" as
+                # auth type config value.
+                'X-Remote-User': request.current_user.user_id,
+            }
         )
 
     # FIXME BS 2018-11-29: enable doc
@@ -37,6 +53,7 @@ class RadicaleProxyController(Controller):
     @hapic.handle_exception(NotAuthorized, http_code=403)
     def radicale_proxy__workspace(self, context, request: TracimRequest):
         # FIXME BS 2018-11-26: check authenticated user can make this request
+        # (use new right validation objects)
         return self._proxy.get_response_for_request(request)
 
     def bind(self, configurator: Configurator) -> None:

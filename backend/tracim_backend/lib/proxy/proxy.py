@@ -1,4 +1,6 @@
 # coding: utf-8
+import copy
+import typing
 from urllib.parse import urljoin
 
 import requests
@@ -14,8 +16,13 @@ class Proxy(object):
         self,
         request: TracimRequest,
         path: str,
+        extra_headers: typing.Optional[dict]=None,
     ) -> Response:
+        extra_headers = extra_headers or {}
         behind_url = urljoin(self._base_address, path)
+        headers = copy.deepcopy(extra_headers)
+        headers.update(extra_headers)
+
         behind_response = requests.request(
             method=request.method,
             # FIXME BS 2018-11-29: Exclude some headers (like basic auth)
