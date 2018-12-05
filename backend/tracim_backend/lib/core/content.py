@@ -571,10 +571,11 @@ class ContentApi(object):
                 )
         content = Content()
         if label:
+            stripped_label = label.strip()
             file_extension = ''
             if content_type.file_extension:
                 file_extension = content_type.file_extension
-            filename = self._prepare_filename(label, file_extension)
+            filename = self._prepare_filename(stripped_label, file_extension)
             self._is_filename_available_or_raise(
                 filename,
                 workspace,
@@ -583,7 +584,7 @@ class ContentApi(object):
             # TODO - G.M - 2018-10-15 - Set file extension and label
             # explicitly instead of filename in order to have correct
             # label/file-extension separation.
-            content.label = label
+            content.label = stripped_label
             content.file_extension = file_extension
         elif filename:
             self._is_filename_available_or_raise(
@@ -1631,17 +1632,21 @@ class ContentApi(object):
         :param force_update: don't raise SameValueError if value does not change
         :return: updated content
         """
+        if not new_label:
+            raise EmptyLabelNotAllowed()
+
+        stripped_new_label = new_label.strip()
         if not self.is_editable(item):
             raise ContentInNotEditableState("Can't update not editable file, you need to change his status or state (deleted/archived) before any change.")  # nopep8
         if not force_update:
-            if item.label == new_label and item.description == new_content:
+            if item.label == stripped_new_label and item.description == new_content:
                 # TODO - G.M - 20-03-2018 - Fix internatization for webdav access.
                 # Internatization disabled in libcontent for now.
                 raise SameValueError('The content did not changed')
         if not new_label:
             raise EmptyLabelNotAllowed()
 
-        label = new_label or item.label
+        label = stripped_new_label or item.label
         filename = self._prepare_filename(label, item.file_extension)
         self._is_filename_available_or_raise(
             filename,
@@ -1651,7 +1656,7 @@ class ContentApi(object):
         )
 
         item.owner = self._user
-        item.label = new_label
+        item.label = stripped_new_label
         item.description = new_content if new_content else item.description # TODO: convert urls into links
         item.revision_type = ActionDescription.EDITION
         return item

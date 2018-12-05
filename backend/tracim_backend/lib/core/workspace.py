@@ -86,13 +86,16 @@ class WorkspaceApi(object):
     ) -> Workspace:
         if not label:
             raise EmptyLabelNotAllowed('Workspace label cannot be empty')
+        stripped_label = label.strip()
+        if not stripped_label:
+            raise EmptyLabelNotAllowed('Workspace label cannot be empty')
 
-        if self._session.query(Workspace).filter(Workspace.label == label).count() > 0:  # nopep8
+        if self._session.query(Workspace).filter(Workspace.label == stripped_label).count() > 0:  # nopep8
             raise WorkspaceLabelAlreadyUsed(
-                'A workspace with label {} already exist.'.format(label)
+                'A workspace with label {} already exist.'.format(stripped_label)
             )
         workspace = Workspace()
-        workspace.label = label
+        workspace.label = stripped_label
         workspace.description = description
         workspace.calendar_enabled = calendar_enabled
 
@@ -142,7 +145,11 @@ class WorkspaceApi(object):
         """
         if not label:
             raise EmptyLabelNotAllowed('Workspace label cannot be empty')
-        workspace.label = label
+        stripped_label = label.strip()
+        if not stripped_label:
+            raise EmptyLabelNotAllowed('Workspace label cannot be empty')
+
+        workspace.label = stripped_label
         workspace.description = description
 
         if save_now:

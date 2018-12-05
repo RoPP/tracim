@@ -384,11 +384,14 @@ class UserApi(object):
         validator.validate_all()
 
         if name is not None:
-            user.display_name = name
+            stripped_name = name.strip()
+            user.display_name = stripped_name
 
-        if email is not None and email != user.email:
-            self._check_email(email)
-            user.email = email
+        if email is not None:
+            stripped_email = email.strip()
+            if stripped_email != user.email:
+                self._check_email(stripped_email)
+                user.email = stripped_email
 
         if password is not None:
             user.password = password
@@ -480,12 +483,13 @@ class UserApi(object):
         validator = TracimValidator()
         validator.add_validator('email', email, user_email_validator)
         validator.validate_all()
-        self._check_email(email)
+        stripped_email = email.strip()
+        self._check_email(stripped_email)
         user = User()
-        user.email = email
+        user.email = stripped_email
         # TODO - G.M - 2018-11-29 - Check if this default_value can be
         # incorrect according to user_public_name_validator
-        user.display_name = email.split('@')[0]
+        user.display_name = stripped_email.split('@')[0].strip()
 
         if not groups:
             gapi = GroupApi(
