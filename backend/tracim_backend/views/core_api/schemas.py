@@ -63,6 +63,7 @@ FIELD_LANG_DESC = "User langage in ISO 639 format. " \
 FIELD_PROFILE_DESC = "Profile of the user. The profile is Tracim wide."
 FIELD_TIMEZONE_DESC = "Timezone as in tz database format"
 
+
 class StrippedString(String):
 
     def _deserialize(self, value, attr, data, **kwargs):
@@ -199,7 +200,7 @@ class SetPasswordSchema(LoggedInUserPasswordSchema):
     new_password2 = String(
         example='8QLa$<w',
         required=True,
-        validate =user_password_validator,
+        validate=user_password_validator,
     )
 
     @post_load
@@ -283,7 +284,7 @@ class UserCreationSchema(marshmallow.Schema):
         example='John Doe',
         required=False,
         default=None,
-        #validate=user_public_name_validator
+        validate=user_public_name_validator
     )
     lang = StrippedString(
         description=FIELD_LANG_DESC,
@@ -514,7 +515,6 @@ class PageQuerySchema(FileQuerySchema):
 
 class FilterContentQuerySchema(marshmallow.Schema):
 
-
     parent_ids = StrippedString(
         validate=regex_string_as_list_of_int,
         example='0,4,5',
@@ -690,7 +690,7 @@ class ResetPasswordModifySchema(marshmallow.Schema):
     email = marshmallow.fields.Email(
         required=True,
         example='hello@tracim.fr',
-        validate = user_email_validator
+        validate=user_email_validator
     )
     reset_password_token = String(
         description="token to reset password of given user",
@@ -699,12 +699,12 @@ class ResetPasswordModifySchema(marshmallow.Schema):
     new_password = String(
         example='8QLa$<w',
         required=True,
-        validate = user_password_validator,
+        validate=user_password_validator,
     )
     new_password2 = String(
         example='8QLa$<w',
         required=True,
-        validate = user_password_validator,
+        validate=user_password_validator,
     )
 
     @post_load
@@ -717,13 +717,13 @@ class BasicAuthSchema(marshmallow.Schema):
     email = marshmallow.fields.Email(
         example='hello@tracim.fr',
         required=True,
-        validate= user_email_validator
+        validate=user_email_validator
     )
     password = String(
         example='8QLa$<w',
         required=True,
         load_only=True,
-        validate= user_password_validator,
+        validate=user_password_validator,
     )
 
     class Meta:
@@ -1170,7 +1170,7 @@ class CommentSchema(marshmallow.Schema):
 class SetCommentSchema(marshmallow.Schema):
     raw_content = StrippedString(
         example='<p>This is just an html comment !</p>',
-        validate= not_empty_string_validator,
+        validate=not_empty_string_validator,
         required=True,
     )
 
@@ -1184,7 +1184,7 @@ class ContentModifyAbstractSchema(marshmallow.Schema):
         required=True,
         example='contract for client XXX',
         description='New title of the content',
-        validate= not_empty_string_validator
+        validate=not_empty_string_validator
     )
 
 
@@ -1204,7 +1204,7 @@ class FolderContentModifySchema(ContentModifyAbstractSchema, TextBasedDataAbstra
         description='list of content types allowed as sub contents. '
                     'This field is required for folder contents, '
                     'set it to empty list in other cases',
-        required = True,
+        required=True,
     )
 
     @post_load
