@@ -81,7 +81,7 @@ class TestLoginEndpoint(FunctionalTest):
         groups = [gapi.get_one_with_name('users')]
         test_user = uapi.create_user(
             email='test@test.test',
-            password='pass',
+            password='password',
             name='bob',
             groups=groups,
             timezone='Europe/Paris',
@@ -186,7 +186,7 @@ class TestWhoamiEndpoint(FunctionalTest):
         groups = [gapi.get_one_with_name('users')]
         test_user = uapi.create_user(
             email='test@test.test',
-            password='pass',
+            password='password',
             name='bob',
             groups=groups,
             timezone='Europe/Paris',
@@ -201,7 +201,7 @@ class TestWhoamiEndpoint(FunctionalTest):
             'Basic',
             (
                 'test@test.test',
-                'pass'
+                'password'
             )
         )
 
@@ -268,7 +268,7 @@ class TestWhoamiEndpointWithApiKey(FunctionalTest):
         groups = [gapi.get_one_with_name('users')]
         test_user = uapi.create_user(
             email='test@test.test',
-            password='pass',
+            password='password',
             name='bob',
             groups=groups,
             timezone='Europe/Paris',
@@ -307,6 +307,18 @@ class TestWhoamiEndpointWithApiKey(FunctionalTest):
         assert 'message' in res.json.keys()
         assert 'details' in res.json.keys()
 
+class TestWhoamiEndpointWithApiKeyNoKey(FunctionalTest):
+
+    def test_api__try_whoami_enpoint_with_api_key__err_401__no_api_key(self):
+        headers_auth = {
+                'Tracim-Api-Key': '',
+                'Tracim-Api-Login': 'admin@admin.admin',
+        }
+        res = self.testapp.get(
+            '/api/v2/auth/whoami',
+            status=401,
+            headers=headers_auth
+        )
 
 class TestSessionEndpointWithCookieAuthToken(FunctionalTest):
     config_section = 'functional_test_with_cookie_auth'
