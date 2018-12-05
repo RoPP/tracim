@@ -110,7 +110,7 @@ class UserDigestSchema(marshmallow.Schema):
                     "(frontend should interpret "
                     "an empty url as default avatar)",
     )
-    public_name = StrippedString(
+    public_name = String(
         example='John Doe',
     )
 
@@ -191,12 +191,12 @@ class SetEmailSchema(LoggedInUserPasswordSchema):
 
 
 class SetPasswordSchema(LoggedInUserPasswordSchema):
-    new_password = StrippedString(
+    new_password = String(
         example='8QLa$<w',
         required=True,
         validate=user_password_validator
     )
-    new_password2 = StrippedString(
+    new_password2 = String(
         example='8QLa$<w',
         required=True,
         validate =user_password_validator,
@@ -218,7 +218,7 @@ class SetUserInfoSchema(marshmallow.Schema):
         example="Europe/Paris",
         required=True,
     )
-    public_name = StrippedString(
+    public_name = String(
         example='John Doe',
         required=True,
         validate=user_public_name_validator
@@ -259,7 +259,7 @@ class UserCreationSchema(marshmallow.Schema):
         example='hello@tracim.fr',
         validate=user_email_validator,
     )
-    password = StrippedString(
+    password = String(
         example='8QLa$<w',
         required=False,
         validate=user_password_validator,
@@ -279,7 +279,7 @@ class UserCreationSchema(marshmallow.Schema):
         default='',
         validate=user_timezone_validator,
     )
-    public_name = StrippedString(
+    public_name = String(
         example='John Doe',
         required=False,
         default=None,
@@ -462,7 +462,7 @@ class CommentsPathSchema(WorkspaceAndContentIdPathSchema):
 
 
 class KnownMemberQuerySchema(marshmallow.Schema):
-    acp = marshmallow.fields.Str(
+    acp = StrippedString(
         example='test',
         description='search text to query',
         validate=acp_validator,
@@ -646,7 +646,7 @@ class WorkspaceMemberInviteSchema(marshmallow.Schema):
         allow_none=True,
         validate=user_email_validator,
     )
-    user_public_name = StrippedString(
+    user_public_name = String(
         example='John',
         default=None,
         allow_none=True,
@@ -692,16 +692,16 @@ class ResetPasswordModifySchema(marshmallow.Schema):
         example='hello@tracim.fr',
         validate = user_email_validator
     )
-    reset_password_token = StrippedString(
+    reset_password_token = String(
         description="token to reset password of given user",
         required=True,
     )
-    new_password = StrippedString(
+    new_password = String(
         example='8QLa$<w',
         required=True,
         validate = user_password_validator,
     )
-    new_password2 = StrippedString(
+    new_password2 = String(
         example='8QLa$<w',
         required=True,
         validate = user_password_validator,
@@ -719,7 +719,7 @@ class BasicAuthSchema(marshmallow.Schema):
         required=True,
         validate= user_email_validator
     )
-    password = StrippedString(
+    password = String(
         example='8QLa$<w',
         required=True,
         load_only=True,
@@ -739,7 +739,7 @@ class LoginOutputHeaders(marshmallow.Schema):
 
 
 class WorkspaceModifySchema(marshmallow.Schema):
-    label = StrippedString(
+    label = String(
         required=True,
         example='My Workspace',
         validate=not_empty_string_validator,
@@ -794,7 +794,7 @@ class WorkspaceDigestSchema(marshmallow.Schema):
         validate=strictly_positive_int_validator,
     )
     slug = StrippedString(example='intranet')
-    label = StrippedString(example='Intranet')
+    label = String(example='Intranet')
     sidebar_entries = marshmallow.fields.Nested(
         WorkspaceMenuEntrySchema,
         many=True,
@@ -965,7 +965,7 @@ class ContentMoveSchema(marshmallow.Schema):
 
 
 class ContentCreationSchema(marshmallow.Schema):
-    label = StrippedString(
+    label = String(
         required=True,
         example='contract for client XXX',
         description='Title of the content to create',
@@ -995,7 +995,7 @@ class ContentDigestSchema(marshmallow.Schema):
         example=6,
         validate=strictly_positive_int_validator,
     )
-    slug = marshmallow.fields.Str(example='intervention-report-12')
+    slug = StrippedString(example='intervention-report-12')
     parent_id = marshmallow.fields.Int(
         example=34,
         allow_none=True,
@@ -1006,8 +1006,8 @@ class ContentDigestSchema(marshmallow.Schema):
         example=19,
         validate=strictly_positive_int_validator,
     )
-    label = marshmallow.fields.Str(example='Intervention Report 12')
-    content_type = marshmallow.fields.Str(
+    label = String(example='Intervention Report 12')
+    content_type = StrippedString(
         example='html-document',
         validate=all_content_types_validator,
     )
@@ -1020,7 +1020,7 @@ class ContentDigestSchema(marshmallow.Schema):
                     'This field is required for folder contents, '
                     'set it to empty list in other cases'
     )
-    status = marshmallow.fields.Str(
+    status = StrippedString(
         example='closed-deprecated',
         validate=content_status_validator,
         description='this slug is found in content_type available statuses',
@@ -1180,7 +1180,7 @@ class SetCommentSchema(marshmallow.Schema):
 
 
 class ContentModifyAbstractSchema(marshmallow.Schema):
-    label = StrippedString(
+    label = String(
         required=True,
         example='contract for client XXX',
         description='New title of the content',
@@ -1217,7 +1217,7 @@ class FileContentModifySchema(TextBasedContentModifySchema):
 
 
 class SetContentStatusSchema(marshmallow.Schema):
-    status = marshmallow.fields.Str(
+    status = StrippedString(
         example='closed-deprecated',
         validate=content_status_validator,
         description='this slug is found in content_type available statuses',
